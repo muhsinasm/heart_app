@@ -22,8 +22,8 @@ def load_data():
 df = load_data()
 
 # Train the model
-X = df.drop(columns='target')
-y = df['target']
+X = df.drop(columns='num')
+y = df['num']
 model = LogisticRegression(max_iter=1000)
 model.fit(X, y)
 
