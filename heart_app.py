@@ -36,7 +36,8 @@ y = y.fillna(0)
 # Now fit the model
 model = LogisticRegression()
 model.fit(X, y)
-
+# User Input
+st.header("🩺 Enter Your Health Details:")
 def user_input_features():
     age = st.slider("Age", 20, 80, 50)
     sex = st.selectbox("Sex", [0, 1])
@@ -69,30 +70,6 @@ def user_input_features():
     }
     return data
 
-
-# User Input
-st.header("🩺 Enter Your Health Details:")
-def user_input_features():
-    age = st.number_input("Enter your age:", min_value=1, max_value=120, step=1)
-    sex = st.radio("Sex:", ["Female", "Male"])
-    sex = 1 if sex == "Male" else 0
-    cp = st.slider("Chest pain type (0–3):", 0, 3)
-    trestbps = st.number_input("Resting blood pressure (in mm Hg):", 80, 200)
-    chol = st.number_input("Serum cholesterol (in mg/dl):", 100, 600)
-    fbs = st.radio("Fasting blood sugar > 120 mg/dl?", ["False", "True"])
-    fbs = 1 if fbs == "True" else 0
-    restecg = st.slider("Resting ECG results (0–2):", 0, 2)
-    thalach = st.number_input("Max heart rate achieved:", 60, 250)
-    exang = st.radio("Exercise-induced angina?", ["No", "Yes"])
-    exang = 1 if exang == "Yes" else 0
-    oldpeak = st.slider("ST depression induced by exercise:", 0.0, 10.0, step=0.1)
-    slope = st.slider("Slope of ST segment (0–2):", 0, 2)
-    ca = st.slider("Number of major vessels colored by fluoroscopy (0–3):", 0, 3)
-    thal = st.slider("Thalassemia (1=Normal, 2=Fixed defect, 3=Reversible defect):", 1, 3)
-
-    data = np.array([[age, sex, cp, trestbps, chol, fbs, restecg,
-                      thalach, exang, oldpeak, slope, ca, thal]])
-    return data
 
 input_data = user_input_features()  # Should return a dictionary or DataFrame
 input_df = pd.DataFrame([input_data])  # Convert to single-row DataFrame
