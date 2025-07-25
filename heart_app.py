@@ -61,22 +61,21 @@ def user_input_features():
                       thalach, exang, oldpeak, slope, ca, thal]])
     return data
 
-input_data = user_input_features()
-input_df = input_data[X.columns]  # Rearranged to match training
+input_data = user_input_features()  # Should return a dictionary or DataFrame
+input_df = pd.DataFrame([input_data])  # Convert to single-row DataFrame
+
+# Rearrange columns to match training data
+input_df = input_df[X.columns]  # This ensures correct order and count
 
 # Prediction
 if st.button("🔍 Predict"):
-    # Ensure input_data is in the same format and order as training features
-    input_df = pd.DataFrame([input_data], columns=X.columns)
-
-    # Make prediction
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1] * 100
-
     if prediction == 1:
         st.error(f"❗ Risk Detected: {probability:.2f}% chance of heart disease. Please consult a doctor.")
     else:
         st.success(f"✅ Good News: Only {100 - probability:.2f}% chance of heart disease. Keep maintaining your health!")
+
 
 # Optional: Confusion matrix display
 if st.checkbox("Show Model Accuracy"):
