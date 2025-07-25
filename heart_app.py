@@ -62,11 +62,17 @@ def user_input_features():
     return data
 
 input_data = user_input_features()
+input_df = input_data[X.columns]  # Rearranged to match training
 
 # Prediction
 if st.button("🔍 Predict"):
-    prediction = model.predict(input_data)[0]
-    probability = model.predict_proba(input_data)[0][1] * 100
+    # Ensure input_data is in the same format and order as training features
+    input_df = pd.DataFrame([input_data], columns=X.columns)
+
+    # Make prediction
+    prediction = model.predict(input_df)[0]
+    probability = model.predict_proba(input_df)[0][1] * 100
+
     if prediction == 1:
         st.error(f"❗ Risk Detected: {probability:.2f}% chance of heart disease. Please consult a doctor.")
     else:
