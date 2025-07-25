@@ -24,7 +24,17 @@ df = load_data()
 # Train the model
 X = df.drop(columns='num')
 y = df['num']
-model = LogisticRegression(max_iter=1000)
+
+# Convert to numeric in case any values are strings
+X = X.apply(pd.to_numeric, errors='coerce')
+y = pd.to_numeric(y, errors='coerce')
+
+# Handle missing values (if any)
+X = X.fillna(0)
+y = y.fillna(0)
+
+# Now fit the model
+model = LogisticRegression()
 model.fit(X, y)
 
 # User Input
