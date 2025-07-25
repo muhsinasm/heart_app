@@ -39,37 +39,39 @@ model.fit(X, y)
 # User Input
 st.header("🩺 Enter Your Health Details:")
 def user_input_features():
-    age = st.slider("Age", 20, 80, 50)
+    age = st.number_input("Age", min_value=1, max_value=120, value=50)
     sex = st.selectbox("Sex", [0, 1])
-    cp = st.selectbox("Chest Pain Type", [0, 1, 2, 3])
-    trestbps = st.slider("Resting Blood Pressure", 80, 200, 120)
-    chol = st.slider("Cholesterol", 100, 600, 200)
-    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", [0, 1])
-    restecg = st.selectbox("Resting ECG", [0, 1, 2])
-    thalach = st.slider("Max Heart Rate Achieved", 70, 210, 150)
-    exang = st.selectbox("Exercise Induced Angina", [0, 1])
-    oldpeak = st.slider("Oldpeak", 0.0, 6.0, 1.0)
-    slope = st.selectbox("Slope", [0, 1, 2])
-    ca = st.selectbox("Number of major vessels (0–3)", [0, 1, 2, 3])
-    thal = st.selectbox("Thal", [0, 1, 2])
+    dataset = st.selectbox("Dataset (source)", [0, 1])
+    cp = st.selectbox("Chest Pain Type (cp)", [0, 1, 2, 3])
+    trestbps = st.number_input("Resting Blood Pressure", min_value=80, max_value=200, value=120)
+    chol = st.number_input("Cholesterol", min_value=100, max_value=600, value=200)
+    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl (1 = true; 0 = false)", [0, 1])
+    restecg = st.selectbox("Resting ECG results", [0, 1, 2])
+    thalch = st.number_input("Max Heart Rate Achieved (thalch)", min_value=60, max_value=250, value=150)
+    exang = st.selectbox("Exercise Induced Angina (1 = yes; 0 = no)", [0, 1])
+    oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+    slope = st.selectbox("Slope of ST segment", [0, 1, 2])
+    ca = st.selectbox("Number of major vessels colored by fluoroscopy (ca)", [0, 1, 2, 3, 4])
+    thal = st.selectbox("Thalassemia (thal)", [0, 1, 2, 3])
 
     data = {
         'age': age,
         'sex': sex,
+        'dataset': dataset,
         'cp': cp,
         'trestbps': trestbps,
         'chol': chol,
         'fbs': fbs,
         'restecg': restecg,
-        'thalach': thalach,
+        'thalch': thalch,
         'exang': exang,
         'oldpeak': oldpeak,
         'slope': slope,
         'ca': ca,
         'thal': thal
     }
-    return data
 
+    return pd.DataFrame(data, index=[0])
 
 input_data = user_input_features()  # Should return a dictionary or DataFrame
 input_df = pd.DataFrame([input_data])  # Convert to single-row DataFrame
@@ -78,9 +80,11 @@ input_df = pd.DataFrame([input_data])  # Convert to single-row DataFrame
 input_df = input_df[X.columns]  # This ensures correct order and count
 
 # Prediction
+input_data = user_input_features()
+
 if st.button("🔍 Predict"):
-    prediction = model.predict(input_df)[0]
-    probability = model.predict_proba(input_df)[0][1] * 100
+    prediction = model.predict(input_data)[0]
+    probability = model.predict_proba(input_data)[0][1] * 100
     if prediction == 1:
         st.error(f"❗ Risk Detected: {probability:.2f}% chance of heart disease. Please consult a doctor.")
     else:
