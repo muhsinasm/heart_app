@@ -16,7 +16,7 @@ st.markdown("This app uses a machine learning model to predict the risk of heart
 # Load and prepare dataset
 @st.cache_data
 def load_data():
-    df = pd.read_csv("https://github.com/muhsinasm/heart_app/blob/main/heart.csv?plain=1")  # You can replace with your own hosted dataset
+    df = pd.read_csv("https://raw.githubusercontent.com/muhsinasm/heart_app/main/heart.csv") # You can replace with your own hosted dataset
     return df
 
 df = load_data()
