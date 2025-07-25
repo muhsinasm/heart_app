@@ -37,6 +37,39 @@ y = y.fillna(0)
 model = LogisticRegression()
 model.fit(X, y)
 
+def user_input_features():
+    age = st.slider("Age", 20, 80, 50)
+    sex = st.selectbox("Sex", [0, 1])
+    cp = st.selectbox("Chest Pain Type", [0, 1, 2, 3])
+    trestbps = st.slider("Resting Blood Pressure", 80, 200, 120)
+    chol = st.slider("Cholesterol", 100, 600, 200)
+    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", [0, 1])
+    restecg = st.selectbox("Resting ECG", [0, 1, 2])
+    thalach = st.slider("Max Heart Rate Achieved", 70, 210, 150)
+    exang = st.selectbox("Exercise Induced Angina", [0, 1])
+    oldpeak = st.slider("Oldpeak", 0.0, 6.0, 1.0)
+    slope = st.selectbox("Slope", [0, 1, 2])
+    ca = st.selectbox("Number of major vessels (0–3)", [0, 1, 2, 3])
+    thal = st.selectbox("Thal", [0, 1, 2])
+
+    data = {
+        'age': age,
+        'sex': sex,
+        'cp': cp,
+        'trestbps': trestbps,
+        'chol': chol,
+        'fbs': fbs,
+        'restecg': restecg,
+        'thalach': thalach,
+        'exang': exang,
+        'oldpeak': oldpeak,
+        'slope': slope,
+        'ca': ca,
+        'thal': thal
+    }
+    return data
+
+
 # User Input
 st.header("🩺 Enter Your Health Details:")
 def user_input_features():
