@@ -70,6 +70,7 @@ def user_input_features():
     return pd.DataFrame(data, index=[0])
 
 input_df = user_input_features()
+st.write("Model Input:", input_data)
 
 # 🧠 Make prediction
 if st.button("🔍 Predict"):
