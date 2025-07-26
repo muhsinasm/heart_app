@@ -7,123 +7,94 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Page Configuration
-st.set_page_config(page_title="Heart Disease Predictor", page_icon="❤️", layout="centered")
-
 # Title
 st.title("❤️ Heart Disease Prediction App")
+st.markdown("This app uses a Logistic Regression ML model to predict the risk of heart disease based on your health inputs.")
 
-# Introduction
-st.markdown("This app uses a **Logistic Regression** model to predict the risk of heart disease based on user health inputs.")
-
-# Load and cache dataset
+# Load and prepare dataset
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/muhsinasm/heart_app/main/heart.csv"
-    return pd.read_csv(url)
+    df = pd.read_csv("https://raw.githubusercontent.com/muhsinasm/heart_app/main/heart.csv")
+    return df
 
 df = load_data()
 
-# Show Dataset Preview
-if st.checkbox("📊 Show Raw Dataset"):
-    st.subheader("Dataset Preview")
-    st.write(df.head())
+# Remove the 'dataset' column if it's not there
+if 'dataset' in df.columns:
+    df = df.drop(columns='dataset')
 
-# Data Info
+# Train the model
 X = df.drop(columns='num')
 y = df['num']
 
-# Handle numeric conversion and missing values
+# Handle missing values
 X = X.apply(pd.to_numeric, errors='coerce').fillna(0)
 y = pd.to_numeric(y, errors='coerce').fillna(0)
 
-# Train Model
-model = LogisticRegression()
+# Train the model
+model = LogisticRegression(max_iter=1000)
 model.fit(X, y)
 
-# User Inputs
-st.header("🩺 Enter Your Health Details:")
+# 🩺 Input from user
+st.header("🩺 Enter Your Health Details Below")
+
 def user_input_features():
     age = st.number_input("Age", 1, 120, 50)
-    sex = st.selectbox("Sex", [0, 1])
-    dataset = st.selectbox("Dataset (source)", [0, 1])
-    cp = st.selectbox("Chest Pain Type (cp)", [0, 1, 2, 3])
-    trestbps = st.number_input("Resting Blood Pressure", 80, 200, 120)
-    chol = st.number_input("Cholesterol", 100, 600, 200)
-    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl", [0, 1])
-    restecg = st.selectbox("Resting ECG results", [0, 1, 2])
-    thalch = st.number_input("Max Heart Rate Achieved (thalch)", 60, 250, 150)
-    exang = st.selectbox("Exercise Induced Angina", [0, 1])
-    oldpeak = st.number_input("Oldpeak", 0.0, 10.0, 1.0, step=0.1)
-    slope = st.selectbox("Slope of ST segment", [0, 1, 2])
-    ca = st.selectbox("Number of major vessels (ca)", [0, 1, 2, 3, 4])
-    thal = st.selectbox("Thalassemia (thal)", [0, 1, 2, 3])
+    sex = st.selectbox("Sex (0 = female, 1 = male)", [0, 1])
+    cp = st.selectbox("Chest Pain Type (0 = typical angina, 1 = atypical, 2 = non-anginal, 3 = asymptomatic)", [0, 1, 2, 3])
+    trestbps = st.number_input("Resting Blood Pressure (in mm Hg)", 80, 200, 120)
+    chol = st.number_input("Cholesterol (in mg/dl)", 100, 600, 200)
+    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl (1 = yes, 0 = no)", [0, 1])
+    restecg = st.selectbox("Resting ECG results (0 = normal, 1 = ST-T wave abnormality, 2 = probable LVH)", [0, 1, 2])
+    thalach = st.number_input("Max Heart Rate Achieved", 60, 250, 150)
+    exang = st.selectbox("Exercise Induced Angina (1 = yes, 0 = no)", [0, 1])
+    oldpeak = st.number_input("Oldpeak (ST depression)", 0.0, 10.0, 1.0, step=0.1)
+    slope = st.selectbox("Slope of ST segment (0 = up, 1 = flat, 2 = down)", [0, 1, 2])
+    ca = st.selectbox("Number of Major Vessels (0–3)", [0, 1, 2, 3])
+    thal = st.selectbox("Thalassemia (1 = normal, 2 = fixed defect, 3 = reversible defect)", [1, 2, 3])
 
     data = {
-        'age': age, 'sex': sex, 'dataset': dataset, 'cp': cp,
-        'trestbps': trestbps, 'chol': chol, 'fbs': fbs, 'restecg': restecg,
-        'thalch': thalch, 'exang': exang, 'oldpeak': oldpeak,
-        'slope': slope, 'ca': ca, 'thal': thal
+        'age': age, 'sex': sex, 'cp': cp, 'trestbps': trestbps,
+        'chol': chol, 'fbs': fbs, 'restecg': restecg, 'thalach': thalach,
+        'exang': exang, 'oldpeak': oldpeak, 'slope': slope, 'ca': ca, 'thal': thal
     }
-
     return pd.DataFrame(data, index=[0])
 
 input_df = user_input_features()
-input_df = input_df[X.columns]  # Ensure column order matches
 
-# Prediction
+# Reorder to match training data
+input_df = input_df[X.columns]
+
+# Predict on button click
 if st.button("🔍 Predict"):
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1] * 100
-
     if prediction == 1:
         st.error(f"❗ Risk Detected: {probability:.2f}% chance of heart disease. Please consult a doctor.")
     else:
-        st.success(f"✅ Good News: Only {100 - probability:.2f}% chance of heart disease. Stay healthy!")
+        st.success(f"✅ Good News: Only {100 - probability:.2f}% chance of heart disease. Keep maintaining your health!")
 
-# Accuracy and Confusion Matrix
-if st.checkbox("📈 Show Model Accuracy & Confusion Matrix"):
-    st.subheader("Model Accuracy")
+# Accuracy and confusion matrix
+if st.checkbox("📊 Show Model Accuracy & Confusion Matrix"):
     y_pred = model.predict(X)
     acc = accuracy_score(y, y_pred)
-    st.write(f"Accuracy: **{acc * 100:.2f}%**")
+    st.write(f"✅ Model Accuracy: **{acc * 100:.2f}%**")
 
     cm = confusion_matrix(y, y_pred)
     fig, ax = plt.subplots()
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Reds', xticklabels=["No", "Yes"], yticklabels=["No", "Yes"])
-    plt.title("Confusion Matrix")
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=["No Disease", "Disease"], yticklabels=["No Disease", "Disease"])
     st.pyplot(fig)
 
-# Feature Correlation Heatmap
-if st.checkbox("📊 Show Correlation Heatmap"):
-    st.subheader("Feature Correlation Heatmap")
-    fig, ax = plt.subplots(figsize=(12, 8))
-    sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f")
-    st.pyplot(fig)
+# Extra Visualization (optional)
+if st.checkbox("📈 Show Some Health Data Visualizations"):
+    st.subheader("🔸 Age Distribution")
+    fig1, ax1 = plt.subplots()
+    sns.histplot(df['age'], bins=20, kde=True, ax=ax1, color='green')
+    st.pyplot(fig1)
 
-# Distribution of Heart Disease
-if st.checkbox("🧬 Show Target Distribution"):
-    st.subheader("Heart Disease Target Class Count")
-    fig, ax = plt.subplots()
-    sns.countplot(x='num', data=df, palette='Set2')
-    plt.xticks([0, 1], ['No Disease', 'Disease'])
-    st.pyplot(fig)
-
-# Pie Chart of Chest Pain Types
-if st.checkbox("🫀 Show Chest Pain Type Distribution"):
-    st.subheader("Chest Pain Type (cp) Distribution")
-    cp_counts = df['cp'].value_counts()
-    fig, ax = plt.subplots()
-    ax.pie(cp_counts, labels=cp_counts.index, autopct='%1.1f%%', startangle=90)
-    st.pyplot(fig)
-
-# Histogram of Cholesterol
-if st.checkbox("🍔 Show Cholesterol Distribution"):
-    st.subheader("Cholesterol Levels")
-    fig, ax = plt.subplots()
-    sns.histplot(df['chol'], bins=30, kde=True, color='orange')
-    st.pyplot(fig)
-
-# Footer
-st.markdown("---")
-st.caption("Made with ❤️ by Muhsina S M | Powered by Logistic Regression and Streamlit")
+    st.subheader("🔸 Chest Pain Types Count")
+    fig2, ax2 = plt.subplots()
+    sns.countplot(x='cp', data=df, palette='mako', ax=ax2)
+    ax2.set_xlabel("Chest Pain Type")
+    ax2.set_ylabel("Count")
+    st.pyplot(fig2)
