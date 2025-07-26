@@ -70,10 +70,11 @@ def user_input_features():
     return pd.DataFrame(data, index=[0])
 
 input_df = user_input_features()
-st.write("Model Input:", input_data)
+
 
 # 🧠 Make prediction
 if st.button("🔍 Predict"):
+    st.write("Model Input:", input_data)
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1] * 100
     if prediction == 1:
