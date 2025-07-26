@@ -74,7 +74,6 @@ input_df = user_input_features()
 
 # 🧠 Make prediction
 if st.button("🔍 Predict"):
-    st.write("Model Input:", input_data)
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1] * 100
     if prediction == 1:
