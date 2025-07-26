@@ -72,19 +72,16 @@ def user_input_features():
     }
 
     return pd.DataFrame(data, index=[0])
+# Get user input
+input_df = user_input_features()
 
-input_data = user_input_features()  # Should return a dictionary or DataFrame
-input_df = pd.DataFrame([input_data])  # Convert to single-row DataFrame
+# Ensure columns are in the correct order
+input_df = input_df[X.columns]
 
-# Rearrange columns to match training data
-input_df = input_df[X.columns]  # This ensures correct order and count
-
-# Prediction
-input_data = user_input_features()
-
+# Prediction button
 if st.button("🔍 Predict"):
-    prediction = model.predict(input_data)[0]
-    probability = model.predict_proba(input_data)[0][1] * 100
+    prediction = model.predict(input_df)[0]
+    probability = model.predict_proba(input_df)[0][1] * 100
     if prediction == 1:
         st.error(f"❗ Risk Detected: {probability:.2f}% chance of heart disease. Please consult a doctor.")
     else:
