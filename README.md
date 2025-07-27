@@ -61,7 +61,7 @@ As a second-year B.Tech student in **Applied Electronics & Instrumentation**, th
 B.Tech in Applied Electronics & Instrumentation  
 Passionate about AI, embedded systems, and solving problems with tech.  
 This is my first ML mini-project—designed, trained, and deployed independently with community mentorship support.  
-Check out my [GitHub Profile](https://github.com/your-username)
+Check out my [GitHub Profile](https://github.com/muhsinasm)
 
 ---
 
